@@ -1,0 +1,124 @@
+{% extends "base.html" %} {% block title %}Gallery – CyberNova Analytics{%
+endblock %} {% block content %}
+
+<!-- ── HERO ── -->
+<section class="page-header-hero">
+  <div class="page-header-bg">
+    <img
+      src="{{ url_for('static', filename='images/gallery.jpg') }}"
+      alt="CyberNova Gallery"
+      class="page-header-bg-img"
+    />
+    <div class="page-header-overlay"></div>
+  </div>
+  <div class="container page-header-content">
+    <span class="badge-label mb-3">Events &amp; Seminars</span>
+    <h1 class="page-header-heading">
+      Cybersecurity in Action Across the SADC Region
+    </h1>
+    <p class="page-header-sub">
+      Explore highlights from CyberNova Analytics' cybersecurity conferences,
+      training workshops, industry panels, and community awareness programmes
+      across Botswana and the SADC region.
+    </p>
+  </div>
+</section>
+
+<!-- ── FILTER BAR ── -->
+<section class="gallery-filter-bar">
+  <div class="container">
+    <div class="d-flex align-items-center flex-wrap gap-2">
+      <span class="label">Filter:</span>
+      <button class="gallery-filter-btn active" data-filter="all">
+        All Events
+      </button>
+      <button class="gallery-filter-btn" data-filter="Conferences">
+        Conferences
+      </button>
+      <button class="gallery-filter-btn" data-filter="Workshops">
+        Workshops
+      </button>
+      <button class="gallery-filter-btn" data-filter="Panels">Panels</button>
+      <button class="gallery-filter-btn" data-filter="Community">
+        Community
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- ── GALLERY GRID ── -->
+<section>
+  <div class="container">
+    {% if images %}
+    <div class="gallery-grid">
+      {% for image in images %}
+      <div
+        class="gallery-item"
+        data-category="{{ image['category'] }}"
+        data-caption="{{ image['caption'] or image['filename'] }}"
+      >
+        <img
+          src="{{ url_for('static', filename='images/gallery/' + image['filename']) }}"
+          alt="{{ image['caption'] or image['filename'] }}"
+          loading="lazy"
+        />
+        <div class="gallery-overlay">
+          <div>
+            {% if image['category'] %}
+            <span class="gallery-overlay-tag">{{ image['category'] }}</span>
+            {% endif %}
+            <p class="gallery-overlay-text mb-0">
+              {{ image['caption'] or image['filename'] }}
+            </p>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    {% else %}
+    <div class="gallery-empty">
+      <i class="bi bi-images"></i>
+      No images have been uploaded yet. Check back soon.
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+<!-- ── LIGHTBOX ── -->
+<div class="gallery-lightbox" id="galleryLightbox">
+  <div class="gallery-lightbox-inner">
+    <button
+      class="gallery-lightbox-close"
+      id="galleryLightboxClose"
+      aria-label="Close"
+    >
+      &times;
+    </button>
+    <img src="" alt="" id="galleryLightboxImg" />
+    <p class="gallery-lightbox-caption" id="galleryLightboxCaption"></p>
+  </div>
+</div>
+
+<!-- ── CTA BAND ── -->
+<section class="gallery-cta">
+  <div class="container">
+    <div class="row align-items-center gy-4">
+      <div class="col-lg-8">
+        <h2>Attend Our Next Event</h2>
+        <p class="mb-0">
+          Join CyberNova Analytics at our upcoming cybersecurity workshops and
+          conferences across the SADC region. Get in touch to register your
+          interest or enquire about speaking opportunities.
+        </p>
+      </div>
+      <div class="col-lg-4 text-lg-end">
+        <a href="{{ url_for('contact') }}" class="btn-gallery-cta">
+          Get in Touch <i class="bi bi-arrow-right"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

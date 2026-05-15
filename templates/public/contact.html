@@ -1,0 +1,237 @@
+{% extends "base.html" %}
+
+{% block title %}Contact – CyberNova Analytics{% endblock %}
+
+{% block content %}
+<div class="contact-page">
+
+  <!-- ── HERO ── -->
+<section class="page-header-hero">
+  <div class="page-header-bg">
+    <img
+      src="{{ url_for('static', filename='images/contact.avif') }}"
+      alt="CyberNova Contact"
+      class="page-header-bg-img"
+    />
+    <div class="page-header-overlay"></div>
+  </div>
+  <div class="container page-header-content">
+    <span class="badge-label mb-3">Secure Connection Initiated</span>
+    <h1 class="page-header-heading">Contact Security Team</h1>
+    <p class="page-header-sub">
+      Reach out to our Botswana-based elite security analysts. Whether you
+      require threat detection architecture or rigorous penetration testing,
+      our vigilance is your defense.
+    </p>
+  </div>
+</section>
+
+  <!-- ── BODY ── -->
+  <section class="contact-body">
+    <div class="container">
+      <div class="row g-5">
+
+        <!-- LEFT: FORM -->
+        <div class="col-lg-7">
+          <div class="form-card">
+
+            {% if submitted %}
+            <!-- Success state -->
+            <div class="success-state">
+              <div class="success-icon">
+                <i class="bi bi-check-lg"></i>
+              </div>
+              <h3>Inquiry Received</h3>
+              <p>
+                Our security team will review your message and respond within
+                one business day. Check your inbox for a confirmation.
+              </p>
+            </div>
+
+            {% else %}
+            <!-- Error messages -->
+            {% if errors %}
+            <div class="alert-errors">
+              {% for error in errors %}
+              <p><i class="bi bi-exclamation-circle me-2"></i>{{ error }}</p>
+              {% endfor %}
+            </div>
+            {% endif %}
+
+            <!-- Form -->
+            <form method="POST" action="{{ url_for('contact') }}" novalidate>
+
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label class="form-label-custom">Full Name</label>
+                    <input
+                      type="text"
+                      name="name"
+                      class="form-control-custom {% if errors and not form_data.name %}is-invalid{% endif %}"
+                      placeholder="John Doe"
+                      value="{{ form_data.name if form_data else '' }}"
+                    >
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label class="form-label-custom">Work Email</label>
+                    <input
+                      type="email"
+                      name="email"
+                      class="form-control-custom {% if errors and not form_data.email %}is-invalid{% endif %}"
+                      placeholder="j.doe@enterprise.com"
+                      value="{{ form_data.email if form_data else '' }}"
+                    >
+                  </div>
+                </div>
+              </div>
+
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label class="form-label-custom">Company</label>
+                    <input
+                      type="text"
+                      name="company"
+                      class="form-control-custom"
+                      placeholder="Global Tech Corp"
+                      value="{{ form_data.company if form_data else '' }}"
+                    >
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label class="form-label-custom">Phone (Optional)</label>
+                    <input
+                      type="tel"
+                      name="phone"
+                      class="form-control-custom"
+                      placeholder="+267 000 0000"
+                      value="{{ form_data.phone if form_data else '' }}"
+                    >
+                  </div>
+                </div>
+              </div>
+
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label class="form-label-custom">Service Type</label>
+                    {% set selected_service = form_data.service_type if form_data else '' %}
+                    <select name="service_type" class="form-control-custom">
+                      <option value="">Select a service...</option>
+                      <option value="Threat Detection & Monitoring" {{ 'selected' if selected_service == 'Threat Detection & Monitoring' }}>Threat Detection &amp; Monitoring</option>
+                      <option value="Penetration Testing"           {{ 'selected' if selected_service == 'Penetration Testing' }}>Penetration Testing</option>
+                      <option value="Vulnerability Assessment"      {{ 'selected' if selected_service == 'Vulnerability Assessment' }}>Vulnerability Assessment</option>
+                      <option value="Managed SOC"                   {{ 'selected' if selected_service == 'Managed SOC' }}>Managed SOC</option>
+                      <option value="Compliance & Risk Governance"  {{ 'selected' if selected_service == 'Compliance & Risk Governance' }}>Compliance &amp; Risk Governance</option>
+                      <option value="Incident Response"             {{ 'selected' if selected_service == 'Incident Response' }}>Incident Response</option>
+                      <option value="General Inquiry"               {{ 'selected' if selected_service == 'General Inquiry' }}>General Inquiry</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label class="form-label-custom">Region</label>
+                    {% set selected_region = form_data.region if form_data else '' %}
+                    <select name="region" class="form-control-custom">
+                      <option value="">Select a region...</option>
+                      <optgroup label="Botswana">
+                        <option value="Gaborone"       {{ 'selected' if selected_region == 'Gaborone' }}>Gaborone</option>
+                        <option value="Francistown"    {{ 'selected' if selected_region == 'Francistown' }}>Francistown</option>
+                        <option value="Maun"           {{ 'selected' if selected_region == 'Maun' }}>Maun</option>
+                        <option value="Kasane"         {{ 'selected' if selected_region == 'Kasane' }}>Kasane</option>
+                        <option value="Lobatse"        {{ 'selected' if selected_region == 'Lobatse' }}>Lobatse</option>
+                        <option value="Selibe Phikwe"  {{ 'selected' if selected_region == 'Selibe Phikwe' }}>Selibe Phikwe</option>
+                        <option value="Palapye"        {{ 'selected' if selected_region == 'Palapye' }}>Palapye</option>
+                        <option value="Serowe"         {{ 'selected' if selected_region == 'Serowe' }}>Serowe</option>
+                      </optgroup>
+                      <optgroup label="SADC Region">
+                        <option value="South Africa"   {{ 'selected' if selected_region == 'South Africa' }}>South Africa</option>
+                        <option value="Namibia"        {{ 'selected' if selected_region == 'Namibia' }}>Namibia</option>
+                        <option value="Zimbabwe"       {{ 'selected' if selected_region == 'Zimbabwe' }}>Zimbabwe</option>
+                        <option value="Zambia"         {{ 'selected' if selected_region == 'Zambia' }}>Zambia</option>
+                        <option value="Mozambique"     {{ 'selected' if selected_region == 'Mozambique' }}>Mozambique</option>
+                        <option value="Tanzania"       {{ 'selected' if selected_region == 'Tanzania' }}>Tanzania</option>
+                      </optgroup>
+                      <optgroup label="Other">
+                        <option value="Other"          {{ 'selected' if selected_region == 'Other' }}>Other</option>
+                      </optgroup>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label-custom">Message</label>
+                <textarea
+                  name="message"
+                  class="form-control-custom {% if errors and not form_data.message %}is-invalid{% endif %}"
+                  placeholder="Describe your security requirements..."
+                  rows="5"
+                >{{ form_data.message if form_data else '' }}</textarea>
+              </div>
+
+              <button type="submit" class="btn-submit">
+                <i class="bi bi-shield-lock"></i>
+                Submit Secure Inquiry
+              </button>
+
+            </form>
+            {% endif %}
+
+          </div>
+        </div>
+
+        <!-- RIGHT: SIDEBAR -->
+        <div class="col-lg-5">
+
+          <!-- Info card -->
+          <div class="sidebar-card">
+            <div class="info-item">
+              <div class="info-icon"><i class="bi bi-telephone-fill"></i></div>
+              <div>
+                <p class="info-label">Direct Secure Line</p>
+                <p class="info-value">+267 395 1234</p>
+              </div>
+            </div>
+            <div class="info-item">
+              <div class="info-icon"><i class="bi bi-envelope-fill"></i></div>
+              <div>
+                <p class="info-label">Secure Email</p>
+                <p class="info-value">ops@cybernova.co.bw</p>
+              </div>
+            </div>
+            <div class="info-item">
+              <div class="info-icon"><i class="bi bi-clock-fill"></i></div>
+              <div>
+                <p class="info-label">Operating Hours</p>
+                <p class="info-value">Mon – Fri, 08:00 – 17:00 CAT<br>24/7 SOC Monitoring Active</p>
+              </div>
+            </div>
+
+            <div class="response-bar">
+              <i class="bi bi-lightning-charge-fill"></i>
+              Avg. response time: <strong>&nbsp;under 4 hours</strong>
+            </div>
+          </div>
+
+          <!-- Trust badges -->
+          <div class="trust-row">
+            <div class="trust-badge">
+              <i class="bi bi-shield-check"></i> ISO 27001 Certified
+            </div>
+            <div class="trust-badge">
+              <i class="bi bi-patch-check"></i> GDPR Compliant
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
+{% endblock %}

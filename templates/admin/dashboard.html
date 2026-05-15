@@ -1,0 +1,208 @@
+{% extends 'admin/admin_base.html' %}
+
+{% block title %}Dashboard — CyberNova Admin{% endblock %}
+
+{% block content %}
+
+<!-- ── ANALYTICS ROW ── -->
+<div class="row g-4 mb-4">
+
+  <!-- Most requested services chart -->
+  <div class="col-lg-7">
+    <div class="admin-card h-100">
+      <div class="admin-card-header">
+        <p class="admin-card-title mb-0">Most Requested Services</p>
+        <i class="bi bi-bar-chart"></i>
+      </div>
+      <div class="admin-card-body">
+        <canvas id="servicesChart" height="200"
+          data-labels='{{ service_counts | map(attribute="service_type") | list | tojson }}'
+          data-values='{{ service_counts | map(attribute="count") | list | tojson }}'>
+        </canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Regional demand -->
+  <div class="col-lg-5">
+    <div class="admin-card h-100">
+      <div class="admin-card-header">
+        <p class="admin-card-title mb-0">Regional Demand (SADC)</p>
+        <i class="bi bi-globe2"></i>
+      </div>
+      <div class="admin-card-body">
+        {% if region_counts %}
+          {% set total = region_counts | sum(attribute='count') %}
+          {% for row in region_counts %}
+          {% set pct = ((row['count'] / total) * 100) | round | int %}
+          <div class="mb-3">
+            <div class="d-flex justify-content-between mb-1">
+              <span class="region-label">{{ row['region'] or 'Unknown' }}</span>
+              <span class="region-pct">{{ pct }}%</span>
+            </div>
+            <div class="region-bar-track">
+              <div class="region-bar-fill" style="width: {{ pct }}%"></div>
+            </div>
+          </div>
+          {% endfor %}
+        {% else %}
+          <p class="text-muted text-center py-4">No regional data yet.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ── INQUIRIES TABLE ── -->
+<div class="admin-card mb-4">
+  <div class="admin-card-header">
+    <div>
+      <p class="admin-card-title mb-0">Inquiries</p>
+      <p class="admin-card-subtitle mb-0">Manage incoming service requests and client consultations.</p>
+    </div>
+    <div class="d-flex align-items-center gap-2 flex-wrap justify-content-end">
+      <a href="{{ url_for('admin_inquiries') }}" class="view-all-link">View All</a>
+      <form method="GET" action="{{ url_for('admin_dashboard') }}" class="d-flex">
+        <select name="service_type" class="admin-select" onchange="this.form.submit()">
+          <option value="">All Service Types</option>
+          {% for st in service_types %}
+          <option value="{{ st['service_type'] }}" {% if service_filter == st['service_type'] %}selected{% endif %}>
+            {{ st['service_type'] }}
+          </option>
+          {% endfor %}
+        </select>
+      </form>
+    </div>
+  </div>
+
+  <div class="admin-card-body p-0">
+    <!-- Scrollable wrapper — enables horizontal scroll on mobile -->
+    <div class="table-responsive-wrap">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th class="col-hide-mobile">Email</th>
+            <th>Service Type</th>
+            <th class="col-hide-mobile">Region</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% if inquiries %}
+            {% for inquiry in inquiries %}
+            <tr>
+              <td>
+                <p class="td-name mb-0">{{ inquiry['name'] }}</p>
+                {% if inquiry['company'] %}
+                <p class="mb-0" style="font-size: 0.78rem; color: #94a3b8">
+                  {{ inquiry['company'] }}
+                </p>
+                {% endif %}
+              </td>
+              <td class="td-email col-hide-mobile">{{ inquiry['email'] }}</td>
+              <td>
+                {% if inquiry['service_type'] %}
+                <span class="service-badge">{{ inquiry['service_type'] }}</span>
+                {% else %}
+                <span class="text-muted">—</span>
+                {% endif %}
+              </td>
+              <td class="td-region col-hide-mobile">{{ inquiry['region'] or '—' }}</td>
+              <td>
+                <span class="status-badge status-{{ inquiry['status'] | lower }}">
+                  <span class="status-dot"></span>
+                  {{ inquiry['status'] | upper }}
+                </span>
+              </td>
+             <td>
+  <div class="dropdown">
+    <button class="action-btn" title="View details"
+      data-bs-toggle="dropdown" aria-expanded="false">
+      <i class="bi bi-three-dots-vertical"></i>
+    </button>
+    <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+      <li>
+        <a class="dropdown-item" href="{{ url_for('admin_inquiries') }}">
+          <i class="bi bi-eye me-2 text-muted"></i>View Inquiry
+        </a>
+      </li>
+    </ul>
+  </div>
+</td>
+            </tr>
+            {% endfor %}
+          {% else %}
+            <tr>
+              <td colspan="6" class="text-center py-4 text-muted">No inquiries yet.</td>
+            </tr>
+          {% endif %}
+          <tr>
+            <td colspan="6" class="text-center py-3" style="font-size:0.8rem; color:#94a3b8;">
+              Showing 5 most recent —
+              <a href="{{ url_for('admin_inquiries') }}" style="color:#10B981; font-weight:600;">View all inquiries</a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <!-- /table-responsive-wrap -->
+  </div>
+</div>
+<!-- /admin-card (inquiries) -->
+
+<!-- ── TESTIMONIAL APPROVAL ── -->
+<div class="admin-card mb-4">
+  <div class="admin-card-header">
+    <div>
+      <p class="admin-card-title mb-0">Testimonial Approval</p>
+      <p class="admin-card-subtitle mb-0">Review recent feedback for public publication.</p>
+    </div>
+    <a href="{{ url_for('admin_testimonials') }}" class="view-all-link">View All Feedback</a>
+  </div>
+  <div class="admin-card-body">
+    {% set pending = testimonials | selectattr('approved', 'equalto', 0) | list %}
+    {% if pending %}
+    <div class="row g-3">
+      {% for t in pending[:2] %}
+      <div class="col-md-6">
+        <div class="testimonial-approval-card">
+          <div class="d-flex align-items-center gap-3 mb-3">
+            <div class="tapproval-avatar">
+              {{ t['client_name'][0] | upper }}{{ t['client_name'].split(' ')[1][0] | upper if t['client_name'].split(' ') | length > 1 else '' }}
+            </div>
+            <div>
+              <p class="tapproval-name mb-0">{{ t['client_name'] }}</p>
+              {% if t['company'] %}
+              <p class="tapproval-role mb-0">{{ t['company'] }}</p>
+              {% endif %}
+            </div>
+            <div class="ms-auto d-flex">
+              {% for i in range(1, 6) %}
+              <i class="bi bi-star{% if i <= t['rating'] %}-fill{% endif %} tapproval-star"></i>
+              {% endfor %}
+            </div>
+          </div>
+          <p class="tapproval-quote">"{{ t['content'] }}"</p>
+          <div class="d-flex gap-2 mt-3">
+            <form method="POST" action="{{ url_for('approve_testimonial', testimonial_id=t['id']) }}" class="flex-grow-1">
+              <button type="submit" class="btn tapproval-approve-btn w-100">Approve & Publish</button>
+            </form>
+            <form method="POST" action="{{ url_for('reject_testimonial', testimonial_id=t['id']) }}" class="flex-grow-1">
+              <button type="submit" class="btn tapproval-discard-btn w-100">Discard</button>
+            </form>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <p class="text-muted text-center py-3">No pending testimonials to review.</p>
+    {% endif %}
+  </div>
+</div>
+<!-- /admin-card (testimonials) -->
+
+{% endblock %}

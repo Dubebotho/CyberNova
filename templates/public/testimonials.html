@@ -1,0 +1,194 @@
+{% extends 'base.html' %} {% block title %}Testimonials — CyberNova Analytics{%
+endblock %} {% block content %}
+
+<!-- ── PAGE HEADER ── -->
+<section class="page-header-hero">
+  <div class="page-header-bg">
+    <img
+      src="{{ url_for('static', filename='images/testimonials.jpg') }}"
+      alt="CyberNova Testimonials"
+      class="page-header-bg-img"
+    />
+    <div class="page-header-overlay"></div>
+  </div>
+  <div class="container page-header-content">
+    <span class="badge-label mb-3">Trusted by Industry Leaders</span>
+    <h1 class="page-header-heading">
+      Forging Security Through Strategic Partnerships
+    </h1>
+    <p class="page-header-sub">
+      Read how our precision analytics and vigilant monitoring have empowered
+      enterprises across Botswana to secure their digital frontiers.
+    </p>
+  </div>
+</section>
+
+<!-- ── TESTIMONIALS GRID ── -->
+<section class="section-pad">
+  <div class="container">
+    {% if testimonials %}
+    <div class="row g-4">
+      {% for t in testimonials %}
+      <div class="col-lg-4 col-md-6">
+        <div class="testimonial-card h-100">
+          <!-- Stars -->
+          <div class="d-flex mb-3">
+            {% for i in range(1, 6) %}
+            <i
+              class="bi bi-star{% if i <= t['rating'] %}-fill text-warning{% endif %} me-1 tcard-star"
+            ></i>
+            {% endfor %}
+          </div>
+          <!-- Quote -->
+          <p class="tcard-quote">"{{ t['content'] }}"</p>
+          <!-- Author -->
+          <div class="d-flex align-items-center mt-auto pt-3 tcard-author-wrap">
+            <div class="tcard-avatar me-3">
+              {{ t['client_name'][0] | upper }}
+            </div>
+            <div>
+              <p class="tcard-name mb-0">{{ t['client_name'] }}</p>
+              {% if t['company'] %}
+              <p class="tcard-company mb-0">{{ t['company'] }}</p>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    {% else %}
+    <!-- ── EMPTY STATE: nudge visitors to submit below ── -->
+    <div class="testimonial-empty-state">
+      <div class="testimonial-empty-icon">
+        <i class="bi bi-chat-quote"></i>
+      </div>
+      <h5 class="testimonial-empty-heading">No testimonials yet</h5>
+      <p class="testimonial-empty-sub">
+        Be the first to share your experience with CyberNova Analytics.
+      </p>
+      <a
+        href="#submitTestimonial"
+        class="btn btn-primary-custom testimonial-empty-btn"
+      >
+        Share Your Experience <i class="bi bi-arrow-down ms-2"></i>
+      </a>
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+<!-- ── SUBMIT TESTIMONIAL FORM ── -->
+<section class="section-pad bg-light-custom" id="submitTestimonial">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-7">
+        <!-- Success message -->
+        {% if submitted %}
+        <div
+          class="alert alert-success d-flex align-items-center mb-4"
+          role="alert"
+        >
+          <i class="bi bi-check-circle-fill me-2"></i>
+          Thank you for your testimonial! It will appear on this page once
+          reviewed.
+        </div>
+        {% endif %}
+
+        <!-- Error messages -->
+        {% if errors %}
+        <div class="alert alert-danger mb-4" role="alert">
+          <ul class="mb-0 ps-3">
+            {% for error in errors %}
+            <li>{{ error }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+        {% endif %}
+
+        <div class="testimonial-form-card">
+          <div class="text-center mb-4">
+            <span class="badge-label-dark mb-2">Share Your Experience</span>
+            <h2 class="tform-heading mt-3">Submit a Testimonial</h2>
+            <p class="tform-sub">
+              Your feedback helps us continuously refine our vigilance and
+              service precision.
+            </p>
+          </div>
+
+          <form method="POST" action="{{ url_for('testimonials') }}">
+            <!-- Name + Company -->
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label tform-label">
+                  Full Name <span class="text-danger">*</span>
+                </label>
+                <input
+                  type="text"
+                  name="client_name"
+                  class="form-control tform-input"
+                  placeholder="Kgosi Tshepo"
+                  value="{{ form_data.get('client_name', '') if form_data else '' }}"
+                  required
+                />
+              </div>
+              <div class="col-md-6">
+                <label class="form-label tform-label">Title / Company</label>
+                <input
+                  type="text"
+                  name="company"
+                  class="form-control tform-input"
+                  placeholder="Director at Gaborone Tech"
+                  value="{{ form_data.get('company', '') if form_data else '' }}"
+                />
+              </div>
+            </div>
+
+            <!-- Star rating -->
+            <div class="mt-3">
+              <label class="form-label tform-label">
+                Overall Rating <span class="text-danger">*</span>
+              </label>
+              <div class="star-rating-input" id="starRating">
+                {% for i in range(1, 6) %}
+                <i class="bi bi-star star-btn" data-value="{{ i }}"></i>
+                {% endfor %}
+              </div>
+              <input
+                type="hidden"
+                name="rating"
+                id="ratingValue"
+                value="{{ form_data.get('rating', '') if form_data else '' }}"
+              />
+            </div>
+
+            <!-- Message -->
+            <div class="mt-3">
+              <label class="form-label tform-label">
+                Testimonial Message <span class="text-danger">*</span>
+              </label>
+              <textarea
+                name="content"
+                rows="5"
+                class="form-control tform-input"
+                placeholder="Describe your experience with our security services..."
+              >
+{{ form_data.get('content', '') if form_data else '' }}</textarea
+              >
+            </div>
+
+            <!-- Submit -->
+            <div class="mt-4">
+              <button type="submit" class="btn btn-primary-custom w-100">
+                Submit Review
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

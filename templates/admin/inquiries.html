@@ -1,0 +1,387 @@
+{% extends "admin/admin_base.html" %} {% block title %}Inquiries – CyberNova
+Admin{% endblock %} {% block search_placeholder %}Search inquiries...{% endblock
+%} {% block content %}
+
+<!-- ── Page header ── -->
+<div
+  class="d-flex align-items-start justify-content-between mb-4 gap-2 flex-wrap"
+>
+  <div>
+    <h1 class="admin-page-title mb-1">Inquiries Management</h1>
+    <p class="admin-page-sub mb-0">
+      Review and manage incoming service requests from enterprise clients and
+      stakeholders across Botswana.
+    </p>
+  </div>
+
+  <!-- Filter by Service Type -->
+  <div class="dropdown" style="flex-shrink: 0">
+    <button
+      class="admin-action-btn dropdown-toggle d-flex align-items-center gap-2"
+      type="button"
+      data-bs-toggle="dropdown"
+      aria-expanded="false"
+      style="
+        background: #fff;
+        color: #0f172a;
+        border: 1px solid rgba(0, 0, 0, 0.12);
+        font-weight: 500;
+      "
+    >
+      <i class="bi bi-funnel"></i>
+      {% if service_filter %}{{ service_filter }}{% else %}Filter by Service
+      Type{% endif %}
+    </button>
+    <ul
+      class="dropdown-menu dropdown-menu-end shadow-sm border-0"
+      style="border-radius: 10px; min-width: 200px"
+    >
+      <li>
+        <a
+          class="dropdown-item {% if not service_filter %}fw-semibold{% endif %}"
+          href="{{ url_for('admin_inquiries') }}"
+        >
+          All Services
+        </a>
+      </li>
+      <li><hr class="dropdown-divider my-1" /></li>
+      {% for st in service_types %}
+      <li>
+        <a
+          class="dropdown-item {% if service_filter == st['service_type'] %}fw-semibold{% endif %}"
+          href="{{ url_for('admin_inquiries', service_type=st['service_type']) }}"
+        >
+          {{ st['service_type'] }}
+        </a>
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
+
+<!-- ── Inquiries table card ── -->
+<div class="admin-card mb-4">
+  <div class="admin-table-wrap">
+    {% if inquiries %}
+
+    <!-- Scrollable wrapper — enables horizontal scroll on mobile -->
+    <div class="table-responsive-wrap">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>NAME</th>
+            <th class="col-hide-mobile">EMAIL</th>
+            <th>SERVICE TYPE</th>
+            <th class="col-hide-mobile">REGION</th>
+            <th>STATUS</th>
+            <th>ACTIONS</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for inq in inquiries %}
+          <tr>
+            <!-- Name + Company -->
+            <td>
+              <p class="td-name mb-0">{{ inq['name'] }}</p>
+              {% if inq['company'] %}
+              <p class="mb-0" style="font-size: 0.78rem; color: #94a3b8">
+                {{ inq['company'] }}
+              </p>
+              {% endif %}
+            </td>
+
+            <!-- Email — hidden on mobile, visible via modal -->
+            <td class="td-email col-hide-mobile">{{ inq['email'] }}</td>
+
+            <!-- Service Type -->
+            <td>
+              {% if inq['service_type'] %}
+              <span class="service-badge">{{ inq['service_type'] }}</span>
+              {% else %}
+              <span style="color: #cbd5e1; font-size: 0.78rem">—</span>
+              {% endif %}
+            </td>
+
+            <!-- Region — hidden on mobile, visible via modal -->
+            <td class="td-region col-hide-mobile">
+              {{ inq['region'] if inq['region'] is defined and inq['region']
+              else '—' }}
+            </td>
+
+            <!-- Status -->
+            <td>
+              <span
+                class="status-badge status-{{ inq['status'] | lower | replace(' ', '_') }}"
+              >
+                <span class="status-dot"></span>
+                {{ inq['status'] | upper }}
+              </span>
+            </td>
+
+            <!-- Actions -->
+            <td>
+              <div class="d-flex align-items-center gap-1">
+                <!-- View -->
+                <button
+                  class="action-btn"
+                  title="View"
+                  data-bs-toggle="modal"
+                  data-bs-target="#viewInquiryModal"
+                  data-id="{{ inq['id'] }}"
+                  data-name="{{ inq['name'] }}"
+                  data-company="{{ inq['company'] or '' }}"
+                  data-email="{{ inq['email'] }}"
+                  data-phone="{{ inq['phone'] or '' }}"
+                  data-service="{{ inq['service_type'] or '' }}"
+                  data-message="{{ inq['message'] }}"
+                  data-status="{{ inq['status'] }}"
+                  data-submitted="{{ inq['submitted_at'] }}"
+                >
+                  <i class="bi bi-eye"></i>
+                </button>
+
+                <!-- Edit Status -->
+                <button
+                  class="action-btn"
+                  title="Update Status"
+                  data-bs-toggle="modal"
+                  data-bs-target="#editInquiryModal"
+                  data-id="{{ inq['id'] }}"
+                  data-name="{{ inq['name'] }}"
+                  data-status="{{ inq['status'] }}"
+                >
+                  <i class="bi bi-pencil"></i>
+                </button>
+
+                <!-- Delete -->
+                <form
+                  method="POST"
+                  action="{{ url_for('admin_inquiry_delete', inquiry_id=inq['id']) }}"
+                  data-confirm="This will permanently delete the inquiry from {{ inq['name'] }}."
+                >
+                  <button
+                    class="action-btn"
+                    title="Delete"
+                    style="color: #dc2626"
+                  >
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </form>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <!-- /table-responsive-wrap -->
+
+    <!-- Pagination / count footer -->
+    <div
+      class="inquiries-footer d-flex align-items-center justify-content-between px-4 py-3"
+      style="border-top: 1px solid rgba(0, 0, 0, 0.05)"
+    >
+      <p class="mb-0" style="font-size: 0.8rem; color: #94a3b8">
+        Showing {{ inquiries | length }} inquir{{ 'y' if inquiries | length == 1
+        else 'ies' }} {% if service_filter %} for
+        <strong>{{ service_filter }}</strong>{% endif %}
+      </p>
+      <div
+        class="inquiries-footer-filters d-flex gap-2 align-items-center flex-wrap justify-content-end"
+      >
+        <a
+          href="{{ url_for('admin_inquiries') }}"
+          class="btn btn-sm {% if not service_filter %}btn-primary{% else %}btn-outline-secondary{% endif %}"
+          style="font-size: 0.78rem; border-radius: 6px"
+        >
+          All
+        </a>
+        {% for st in service_types %}
+        <a
+          href="{{ url_for('admin_inquiries', service_type=st['service_type']) }}"
+          class="btn btn-sm {% if service_filter == st['service_type'] %}btn-primary{% else %}btn-outline-secondary{% endif %}"
+          style="font-size: 0.78rem; border-radius: 6px"
+        >
+          {{ st['service_type'] }}
+        </a>
+        {% endfor %}
+      </div>
+    </div>
+
+    {% else %}
+    <div class="admin-empty-state m-3">
+      <i class="bi bi-inbox"></i>
+      <h6>No inquiries yet</h6>
+      <p>
+        When clients submit the contact form, their inquiries will appear here.
+      </p>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     VIEW INQUIRY MODAL
+════════════════════════════════════════ -->
+<div class="modal fade" id="viewInquiryModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" style="max-width: 520px">
+    <div class="modal-content admin-modal-content">
+      <div
+        class="admin-modal-header d-flex align-items-center justify-content-between"
+      >
+        <div>
+          <h5 class="admin-modal-title mb-0" id="viewModalName">
+            Inquiry Details
+          </h5>
+          <p
+            class="mb-0"
+            style="font-size: 0.75rem; color: rgba(255, 255, 255, 0.6)"
+            id="viewModalSubmitted"
+          ></p>
+        </div>
+        <button
+          type="button"
+          class="btn-close btn-close-white"
+          data-bs-dismiss="modal"
+        ></button>
+      </div>
+
+      <div class="admin-modal-body">
+        <!-- Status badge -->
+        <div class="mb-3">
+          <span class="status-badge" id="viewModalStatusBadge">
+            <span class="status-dot"></span>
+            <span id="viewModalStatus"></span>
+          </span>
+        </div>
+
+        <!-- Contact info -->
+        <div class="row g-3 mb-3">
+          <div class="col-6">
+            <p class="admin-form-label mb-1">Name</p>
+            <p class="mb-0" style="font-size: 0.875rem" id="viewModalNameVal">
+              —
+            </p>
+          </div>
+          <div class="col-6">
+            <p class="admin-form-label mb-1">Company</p>
+            <p class="mb-0" style="font-size: 0.875rem" id="viewModalCompany">
+              —
+            </p>
+          </div>
+          <div class="col-6">
+            <p class="admin-form-label mb-1">Email</p>
+            <p
+              class="mb-0"
+              style="font-size: 0.875rem; word-break: break-all"
+              id="viewModalEmail"
+            >
+              —
+            </p>
+          </div>
+          <div class="col-6">
+            <p class="admin-form-label mb-1">Phone</p>
+            <p class="mb-0" style="font-size: 0.875rem" id="viewModalPhone">
+              —
+            </p>
+          </div>
+          <div class="col-12">
+            <p class="admin-form-label mb-1">Service Type</p>
+            <span class="service-badge" id="viewModalService"></span>
+          </div>
+        </div>
+
+        <!-- Message -->
+        <div>
+          <p class="admin-form-label mb-1">Message</p>
+          <div
+            style="
+              background: #f8fafc;
+              border: 1px solid rgba(0, 0, 0, 0.07);
+              border-radius: 8px;
+              padding: 0.85rem;
+              font-size: 0.875rem;
+              color: #374151;
+              line-height: 1.65;
+            "
+            id="viewModalMessage"
+          ></div>
+        </div>
+      </div>
+
+      <div class="admin-modal-footer d-flex justify-content-end gap-2">
+        <button
+          type="button"
+          class="btn btn-light btn-sm"
+          data-bs-dismiss="modal"
+          style="border-radius: 7px; font-size: 0.82rem"
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     EDIT STATUS MODAL
+════════════════════════════════════════ -->
+<div class="modal fade" id="editInquiryModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" style="max-width: 420px">
+    <div class="modal-content admin-modal-content">
+      <div
+        class="admin-modal-header d-flex align-items-center justify-content-between"
+      >
+        <h5 class="admin-modal-title mb-0">Update Status</h5>
+        <button
+          type="button"
+          class="btn-close btn-close-white"
+          data-bs-dismiss="modal"
+        ></button>
+      </div>
+
+      <div class="admin-modal-body">
+        <p class="mb-3" style="font-size: 0.85rem; color: #64748b">
+          Updating status for <strong id="editModalName"></strong>
+        </p>
+
+        <form id="editInquiryForm" method="POST">
+          <div class="mb-3">
+            <label class="admin-form-label">Status</label>
+            <select
+              name="status"
+              class="form-select admin-form-input"
+              id="editModalStatus"
+            >
+              <option value="new">New</option>
+              <option value="pending">Pending</option>
+              <option value="in_progress">In Progress</option>
+              <option value="closed">Closed</option>
+              <option value="archived">Archived</option>
+            </select>
+          </div>
+
+          <div class="d-flex justify-content-end gap-2 mt-4">
+            <button
+              type="button"
+              class="btn btn-light btn-sm"
+              data-bs-dismiss="modal"
+              style="border-radius: 7px; font-size: 0.82rem"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              class="admin-action-btn"
+              style="font-size: 0.82rem; padding: 0.45rem 1.1rem"
+            >
+              Save Changes
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

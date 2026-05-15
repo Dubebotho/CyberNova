@@ -1,0 +1,125 @@
+{% extends 'base.html' %} {% block title %}Solutions — CyberNova Analytics{%
+endblock %} {% block content %}
+
+<!-- ── PAGE HEADER ── -->
+<section class="page-header-hero">
+  <div class="page-header-bg">
+    <img
+      src="{{ url_for('static', filename='images/solutions-header.jpg') }}"
+      alt="CyberNova Solutions"
+      class="page-header-bg-img"
+    />
+    <div class="page-header-overlay"></div>
+  </div>
+  <div class="container page-header-content">
+    <span class="badge-label mb-3">Advanced Security Solutions</span>
+    <h1 class="page-header-heading">
+      Fortifying Enterprises with Precision Intelligence
+    </h1>
+    <p class="page-header-sub">
+      Deploying world-class cybersecurity frameworks tailored for the Botswana
+      enterprise landscape. Our strategic approach ensures vigilance,
+      compliance, and resilience.
+    </p>
+  </div>
+</section>
+
+<!-- ── SOLUTIONS GRID ── -->
+<section class="section-pad">
+  <div class="container">
+    {% if solutions %}
+    <div class="row g-4">
+      {% for solution in solutions %}
+      <div class="col-lg-4 col-md-6">
+        <div class="solution-card h-100">
+          <div class="solution-icon mb-4">
+            <i class="bi {{ solution['icon'] or 'bi-shield-check' }}"></i>
+          </div>
+          <h4 class="solution-title">{{ solution['title'] }}</h4>
+          <p class="solution-desc">{{ solution['description'] }}</p>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-5">
+      <i class="bi bi-shield-x fs-1 text-muted"></i>
+      <p class="mt-3 text-muted">
+        No solutions available at this time. Please check back soon.
+      </p>
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+<!-- ── WHY CYBERNOVA ── -->
+<section class="section-pad bg-light-custom">
+  <div class="container">
+    <div class="row align-items-center g-5">
+      <div class="col-lg-6">
+        <h2 class="section-heading">Why CyberNova Analytics?</h2>
+        <p class="section-sub mt-3">
+          We combine deep regional expertise with globally proven methodologies
+          to deliver security outcomes that matter to African enterprises.
+        </p>
+        <div class="row g-3 mt-2">
+          {% for icon, title, desc in [ ('bi-geo-alt-fill', 'Regional
+          Expertise', 'Deep understanding of the Southern African digital
+          landscape and its unique infrastructure challenges.'), ('bi-cpu',
+          'Quantum Resilience', 'Next-generation encryption protocols designed
+          to withstand emerging computational threats.'),
+          ('bi-lightning-charge-fill', 'Integrated Response', 'Automated
+          incident response playbooks that reduce mean-time-to-recovery by
+          74%.'), ('bi-graph-up-arrow', 'Proven Results', '150+ enterprise
+          clients secured across Southern Africa with a 99.9% threat mitigation
+          rate.') ] %}
+          <div class="col-sm-6">
+            <div class="why-card">
+              <i class="bi {{ icon }} text-accent why-icon"></i>
+              <h6 class="why-title mt-2">{{ title }}</h6>
+              <p class="why-desc">{{ desc }}</p>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="stats-highlight-card">
+          {% for value, label in [ ('99.9%', 'Threat Mitigation Rate'), ('150+',
+          'Enterprise Clients'), ('24/7', 'Vigilance Center'), ('12ms', 'Average
+          Latency') ] %}
+          <div class="stats-highlight-item">
+            <span class="stats-highlight-value">{{ value }}</span>
+            <span class="stats-highlight-label">{{ label }}</span>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CTA ── -->
+<section class="cta-section section-pad">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-lg-8">
+        <h2 class="cta-heading">Ready to Secure Your Digital Assets?</h2>
+        <p class="cta-sub mt-2">
+          Book a technical scoping session with our senior security consultants
+          to identify your current posture gaps.
+        </p>
+      </div>
+      <div class="col-lg-4 text-lg-end mt-4 mt-lg-0">
+        <a href="{{ url_for('contact') }}" class="btn btn-primary-custom me-2">
+          Schedule Call
+        </a>
+        <a href="{{ url_for('case_studies') }}" class="btn btn-outline-custom">
+          View Case Studies
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

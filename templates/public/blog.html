@@ -1,0 +1,299 @@
+{% extends 'base.html' %} {% block title %}Blog — CyberNova Analytics{% endblock
+%} {% block content %}
+
+<!-- ── PAGE HEADER ── -->
+<section class="page-header-hero">
+  <div class="page-header-bg">
+    <img
+      src="{{ url_for('static', filename='images/blog_post.jpg') }}"
+      alt="CyberNova Blog"
+      class="page-header-bg-img"
+    />
+    <div class="page-header-overlay"></div>
+  </div>
+  <div class="container page-header-content">
+    <span class="badge-label mb-3">Cybersecurity Insights</span>
+    <h1 class="page-header-heading">
+      Cybersecurity Insights & Strategic Analytics
+    </h1>
+    <p class="page-header-sub">
+      Navigating the complex digital landscape of Southern Africa with
+      precision-driven intelligence and expert technical analysis.
+    </p>
+  </div>
+</section>
+
+{% if posts %}
+
+<!-- ── FEATURED POST ── -->
+{% set featured = posts[0] %}
+<section class="section-pad pb-0">
+  <div class="container">
+    <div class="featured-post-card">
+      <div class="row g-0 align-items-stretch">
+        <!-- Left: cover image or placeholder -->
+        <div class="col-lg-5">
+          <div class="featured-post-img-wrap">
+            {% if featured['cover_image'] %}
+            <img
+              src="{{ url_for('static', filename=featured['cover_image']) }}"
+              alt="{{ featured['title'] }}"
+              class="featured-post-img"
+            />
+            {% else %}
+            <div class="featured-post-img-placeholder">
+              <i class="bi bi-newspaper"></i>
+            </div>
+            {% endif %}
+          </div>
+        </div>
+        <!-- Right: content -->
+        <div class="col-lg-7">
+          <div class="featured-post-content">
+            <span class="post-category-badge mb-3">Featured</span>
+            <h2 class="featured-post-title">{{ featured['title'] }}</h2>
+            <p class="featured-post-excerpt mt-3">
+              {{ featured['content'][:200] }}...
+            </p>
+            <div class="d-flex align-items-center justify-content-between mt-4">
+              <span class="post-meta">
+                <i class="bi bi-calendar3 me-1"></i>
+                {{ featured['published_at'][:10] if featured['published_at']
+                else 'Draft' }}
+              </span>
+              <a
+                href="#"
+                class="case-link"
+                data-bs-toggle="modal"
+                data-bs-target="#blogModalFeatured"
+              >
+                Read Full Article <i class="bi bi-arrow-right ms-1"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── BLOG GRID ── -->
+<section class="section-pad">
+  <div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h3 class="blog-grid-heading">Recent Technical Briefings</h3>
+      <div class="blog-filter-tabs">
+        <a
+          href="{{ url_for('blog') }}"
+          class="blog-filter-tab {% if not request.args.get('status') %}active{% endif %}"
+        >
+          Latest
+        </a>
+      </div>
+    </div>
+
+    {% if posts|length > 1 %}
+    <!-- Grid: all posts except the featured first one -->
+    <div class="row g-4">
+      {% for post in posts %} {% if not loop.first %}
+      <div class="col-lg-4 col-md-6">
+        <div class="blog-card h-100">
+          <div class="blog-card-img">
+            {% if post['cover_image'] %}
+            <img
+              src="{{ url_for('static', filename=post['cover_image']) }}"
+              alt="{{ post['title'] }}"
+              class="blog-card-cover-img"
+            />
+            {% else %}
+            <i class="bi bi-file-earmark-text"></i>
+            {% endif %}
+          </div>
+          <div class="blog-card-body">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <span class="post-category-badge">
+                {{ post['category'] if post['category'] else 'Technical' }}
+              </span>
+              <span class="post-meta">
+                {{ post['published_at'][:10] if post['published_at'] else '' }}
+              </span>
+            </div>
+            <h5 class="blog-card-title">{{ post['title'] }}</h5>
+            <p class="blog-card-excerpt">{{ post['content'][:120] }}...</p>
+          </div>
+          <div class="blog-card-footer">
+            <a
+              href="#"
+              class="case-link"
+              data-bs-toggle="modal"
+              data-bs-target="#blogModal{{ post['id'] }}"
+            >
+              Read More <i class="bi bi-arrow-right ms-1"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+      {% endif %} {% endfor %}
+    </div>
+
+    {% else %}
+    <!-- Edge case: only 1 post exists, it's already shown as featured above -->
+    <div class="blog-only-featured">
+      <i class="bi bi-journal-text"></i>
+      <p>More articles are on the way. Check back soon.</p>
+    </div>
+    {% endif %}
+
+    <!-- Pagination -->
+    {% if posts|length > 6 %}
+    <nav
+      class="mt-5 d-flex justify-content: center"
+      aria-label="Blog pagination"
+    >
+      <ul class="pagination blog-pagination">
+        <li class="page-item">
+          <a class="page-link" href="#"><i class="bi bi-chevron-left"></i></a>
+        </li>
+        <li class="page-item active"><a class="page-link" href="#">1</a></li>
+        <li class="page-item"><a class="page-link" href="#">2</a></li>
+        <li class="page-item"><a class="page-link" href="#">3</a></li>
+        <li class="page-item">
+          <a class="page-link" href="#"><i class="bi bi-chevron-right"></i></a>
+        </li>
+      </ul>
+    </nav>
+    {% endif %}
+  </div>
+</section>
+
+{% else %}
+
+<!-- ── EMPTY STATE: no posts at all ── -->
+<section class="section-pad">
+  <div class="container">
+    <div class="blog-empty-state">
+      <i class="bi bi-journal-x"></i>
+      <h5>No articles published yet</h5>
+      <p>
+        Check back soon for cybersecurity insights and strategic analytics from
+        our team.
+      </p>
+    </div>
+  </div>
+</section>
+
+{% endif %}
+
+<!-- ── MODALS ── -->
+{% if posts %}
+
+<!-- Featured post modal -->
+{% set featured = posts[0] %}
+<div
+  class="modal fade"
+  id="blogModalFeatured"
+  tabindex="-1"
+  aria-labelledby="blogModalFeaturedLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content blog-modal-content">
+      <div class="modal-header blog-modal-header">
+        <div class="flex-grow-1 pe-3">
+          <span class="post-category-badge mb-2 d-inline-block">Featured</span>
+          <h4 class="modal-title blog-modal-title" id="blogModalFeaturedLabel">
+            {{ featured['title'] }}
+          </h4>
+          <p class="blog-modal-meta mt-1">
+            <i class="bi bi-calendar3 me-1"></i>
+            {{ featured['published_at'][:10] if featured['published_at'] else
+            'Draft' }}
+          </p>
+        </div>
+        <button
+          type="button"
+          class="btn-close btn-close-white"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      {% if featured['cover_image'] %}
+      <div class="blog-modal-cover">
+        <img
+          src="{{ url_for('static', filename=featured['cover_image']) }}"
+          alt="{{ featured['title'] }}"
+          class="blog-modal-cover-img"
+        />
+      </div>
+      {% endif %}
+      <div class="modal-body blog-modal-body">{{ featured['content'] }}</div>
+      <div class="modal-footer blog-modal-footer">
+        <button
+          type="button"
+          class="btn btn-outline-custom"
+          data-bs-dismiss="modal"
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Remaining post modals -->
+{% for post in posts %} {% if not loop.first %}
+<div
+  class="modal fade"
+  id="blogModal{{ post['id'] }}"
+  tabindex="-1"
+  aria-labelledby="blogModalLabel{{ post['id'] }}"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content blog-modal-content">
+      <div class="modal-header blog-modal-header">
+        <div class="flex-grow-1 pe-3">
+          <span class="post-category-badge mb-2 d-inline-block">
+            {{ post['category'] if post['category'] else 'Technical' }}
+          </span>
+          <h4
+            class="modal-title blog-modal-title"
+            id="blogModalLabel{{ post['id'] }}"
+          >
+            {{ post['title'] }}
+          </h4>
+          <p class="blog-modal-meta mt-1">
+            <i class="bi bi-calendar3 me-1"></i>
+            {{ post['published_at'][:10] if post['published_at'] else 'Draft' }}
+          </p>
+        </div>
+        <button
+          type="button"
+          class="btn-close btn-close-white"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      {% if post['cover_image'] %}
+      <div class="blog-modal-cover">
+        <img
+          src="{{ url_for('static', filename=post['cover_image']) }}"
+          alt="{{ post['title'] }}"
+          class="blog-modal-cover-img"
+        />
+      </div>
+      {% endif %}
+      <div class="modal-body blog-modal-body">{{ post['content'] }}</div>
+      <div class="modal-footer blog-modal-footer">
+        <button
+          type="button"
+          class="btn btn-outline-custom"
+          data-bs-dismiss="modal"
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %} {% endfor %} {% endif %} {% endblock %}

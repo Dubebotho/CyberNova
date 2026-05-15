@@ -1,0 +1,109 @@
+{% extends 'admin/admin_base.html' %} {% block title %}Testimonials — CyberNova
+Admin{% endblock %} {% block search_placeholder %}Search testimonials...{%
+endblock %} {% block content %}
+
+<!-- ── PAGE HEADER ── -->
+<div class="d-flex justify-content-between align-items-start mb-4">
+  <div>
+    <h4 class="admin-page-title">Testimonials Approval</h4>
+    <p class="admin-page-sub">
+      Manage and moderate client feedback for public display.
+    </p>
+  </div>
+</div>
+
+<!-- ── TESTIMONIALS GRID ── -->
+{% if testimonials %}
+<div class="row g-4">
+  {% for t in testimonials %}
+  <div class="col-lg-6">
+    <div class="tapproval-card">
+      <!-- Card header: avatar + name + stars -->
+      <div class="d-flex justify-content-between align-items-start mb-3">
+        <div class="d-flex align-items-center gap-3">
+          <div class="tapproval-avatar">
+            {{ t['client_name'].split()[0][0] | upper }}{{
+            t['client_name'].split()[-1][0] | upper if
+            t['client_name'].split()|length > 1 else '' }}
+          </div>
+          <div>
+            <p class="tapproval-name mb-0">{{ t['client_name'] }}</p>
+            {% if t['company'] %}
+            <p class="tapproval-company mb-0">{{ t['company'] | upper }}</p>
+            {% endif %}
+          </div>
+        </div>
+        <!-- Star rating -->
+        <div class="d-flex gap-1">
+          {% for i in range(1, 6) %}
+          <i
+            class="bi bi-star{% if i <= t['rating'] %}-fill tapproval-star-filled{% else %} tapproval-star-empty{% endif %}"
+          ></i>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Status badge -->
+      <div class="mb-3">
+        {% if t['approved'] %}
+        <span class="tapproval-badge tapproval-badge-live">Live</span>
+        {% else %}
+        <span class="tapproval-badge tapproval-badge-pending"
+          >Pending Review</span
+        >
+        {% endif %}
+      </div>
+
+      <!-- Quote -->
+      <p class="tapproval-quote">"{{ t['content'] }}"</p>
+
+      <!-- Action buttons -->
+      <div class="d-flex gap-3 mt-4">
+        {% if t['approved'] %}
+        <!-- Already approved state -->
+        <span class="tapproval-already-approved"> Already Approved </span>
+        <form
+          method="POST"
+          action="{{ url_for('unpublish_testimonial', testimonial_id=t['id']) }}"
+        >
+          <button type="submit" class="btn tapproval-unpublish-btn">
+            <i class="bi bi-slash-circle me-2"></i> Unpublish
+          </button>
+        </form>
+        {% else %}
+        <!-- Pending state -->
+        <form
+          method="POST"
+          action="{{ url_for('approve_testimonial', testimonial_id=t['id']) }}"
+        >
+          <button type="submit" class="btn tapproval-approve-btn">
+            <i class="bi bi-check-circle me-2"></i> Approve
+          </button>
+        </form>
+        <form
+          method="POST"
+          action="{{ url_for('reject_testimonial', testimonial_id=t['id']) }}"
+          data-confirm="This will permanently discard this testimonial."
+        >
+          <button type="submit" class="btn tapproval-discard-btn">
+            <i class="bi bi-trash me-2"></i> Discard
+          </button>
+        </form>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+{% else %}
+<!-- ── EMPTY STATE ── -->
+<div class="admin-empty-state">
+  <i class="bi bi-chat-quote"></i>
+  <h6>No testimonials yet</h6>
+  <p>
+    Client testimonials submitted through the public page will appear here for
+    review.
+  </p>
+</div>
+{% endif %} {% endblock %}

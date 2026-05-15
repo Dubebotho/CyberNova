@@ -1,0 +1,116 @@
+{% extends 'base.html' %} {% block title %}Home — CyberNova Analytics{% endblock
+%} {% block content %}
+
+<!-- ── HERO ── -->
+<section class="hero-section">
+  <div class="hero-bg">
+    <img
+      src="{{ url_for('static', filename='images/cybersecurity_shield.jpg') }}"
+      alt="CyberNova Security"
+      class="hero-bg-img"
+    />
+    <div class="hero-overlay"></div>
+  </div>
+  <div class="container hero-content">
+    <div class="row">
+      <div class="col-lg-7 col-md-10">
+        <span class="badge-label mb-3">Established Cybersecurity Leaders</span>
+        <h1 class="hero-heading">
+          Securing the Future of Digital Enterprises in Southern Africa
+        </h1>
+        <p class="hero-sub mt-3">
+          CyberNova Analytics delivers enterprise-grade intelligence and
+          security orchestration. We empower regional leaders with precision
+          analytics and proactive defence strategies tailored for the modern
+          threat landscape.
+        </p>
+        <div class="d-flex flex-wrap gap-3 mt-4">
+          <a href="{{ url_for('contact') }}" class="btn btn-primary-custom">
+            Contact Our Security Team
+          </a>
+          <a
+            href="{{ url_for('solutions') }}"
+            class="btn btn-outline-light-custom"
+          >
+            View Capabilities
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── SERVICES OVERVIEW ── -->
+<section class="section-pad bg-light-custom">
+  <div class="container">
+    <div class="d-flex justify-content-between align-items-start mb-5">
+      <div>
+        <h2 class="section-heading">Strategic Security Frameworks</h2>
+        <p class="section-sub">
+          Our core competencies are built on the foundations of precision,
+          vigilance, and clarity.
+        </p>
+      </div>
+      <a
+        href="{{ url_for('solutions') }}"
+        class="explore-link d-none d-md-block"
+      >
+        Explore all solutions <i class="bi bi-arrow-right"></i>
+      </a>
+    </div>
+
+    <div class="row g-4">
+      {% if solutions %} {% for solution in solutions %}
+      <div class="col-lg-4 col-md-6">
+        <div class="service-card h-100">
+          <div class="service-icon mb-3">
+            <i class="bi {{ solution['icon'] or 'bi-shield' }}"></i>
+          </div>
+          <h5 class="service-title">{{ solution['title'] }}</h5>
+          <p class="service-desc">{{ solution['description'] }}</p>
+        </div>
+      </div>
+      {% endfor %} {% else %}
+      <!-- Fallback cards if no solutions in database yet -->
+      {% for item in [ ('bi-shield-check', 'Threat Detection', 'Real-time
+      AI-driven monitoring and pattern recognition to identify vulnerabilities
+      before they manifest as breaches.'), ('bi-cloud-check', 'Cloud Security',
+      'Fortifying hybrid and multi-cloud environments through rigid architecture
+      and identity management.'), ('bi-clipboard-check', 'Compliance',
+      'Navigating local and international regulatory frameworks including POPIA
+      and GDPR with automated auditing.') ] %}
+      <div class="col-lg-4 col-md-6">
+        <div class="service-card h-100">
+          <div class="service-icon mb-3">
+            <i class="bi {{ item[0] }}"></i>
+          </div>
+          <h5 class="service-title">{{ item[1] }}</h5>
+          <p class="service-desc">{{ item[2] }}</p>
+        </div>
+      </div>
+      {% endfor %} {% endif %}
+    </div>
+
+    <div class="text-center mt-4 d-md-none">
+      <a href="{{ url_for('solutions') }}" class="explore-link">
+        Explore all solutions <i class="bi bi-arrow-right"></i>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ── CTA BANNER ── -->
+<section class="cta-section section-pad">
+  <div class="container text-center">
+    <h2 class="cta-heading">Secure your assets. Empower your growth.</h2>
+    <p class="cta-sub mt-3">
+      Join the vanguard of digital protection. Partner with CyberNova Analytics
+      for precision security that drives business confidence.
+    </p>
+    <a href="{{ url_for('contact') }}" class="btn btn-primary-custom mt-4">
+      Initiate Security Audit
+    </a>
+  </div>
+</section>
+
+{% endblock %}

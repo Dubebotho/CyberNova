@@ -1,0 +1,397 @@
+{% extends "base.html" %} {% block title %}Admin Login – CyberNova Analytics{%
+endblock %} {% block navbar %}{% endblock %} {% block footer %}{% endblock %} {%
+block extra_css %}
+<style>
+  /* ── ADMIN BODY OVERRIDE ── */
+  body {
+    background-color: #f0f2f7;
+    background-image:
+      linear-gradient(rgba(13, 27, 62, 0.045) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(13, 27, 62, 0.045) 1px, transparent 1px);
+    background-size: 48px 48px;
+  }
+
+  /* ── TOP BAR ── */
+  .admin-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 40px;
+  }
+  .topbar-brand {
+    font-size: 1rem;
+    font-weight: 800;
+    color: #0d1b3e;
+    text-decoration: none;
+    letter-spacing: -0.02em;
+  }
+  .topbar-return {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #5a6a7e;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: color 0.2s;
+  }
+  .topbar-return:hover {
+    color: #0d1b3e;
+  }
+
+  /* ── MAIN ── */
+  .login-main {
+    min-height: calc(100vh - 200px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 16px;
+  }
+
+  /* ── CARD ── */
+  .login-card {
+    background: #fff;
+    border: 1px solid #dce3ec;
+    border-radius: 12px;
+    padding: 48px 44px;
+    width: 100%;
+    max-width: 420px;
+    box-shadow: 0 4px 32px rgba(13, 27, 62, 0.08);
+  }
+
+  /* icon badge */
+  .lock-badge {
+    width: 56px;
+    height: 56px;
+    background: #eef1f8;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+  }
+  .lock-badge i {
+    font-size: 1.5rem;
+    color: #0d1b3e;
+  }
+
+  .login-card h1 {
+    font-size: 1.7rem;
+    font-weight: 800;
+    color: #0d1b3e;
+    letter-spacing: -0.03em;
+    text-align: center;
+    margin-bottom: 6px;
+  }
+  .restricted-label {
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #00a884;
+    text-align: center;
+    margin-bottom: 32px;
+    line-height: 1.5;
+  }
+
+  /* ── FORM FIELDS ── */
+  .field-label {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #8898aa;
+    margin-bottom: 6px;
+    display: block;
+  }
+  .field-label-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+  }
+  .field-label-row .field-label {
+    margin-bottom: 0;
+  }
+  .reset-link {
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #8898aa;
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .reset-link:hover {
+    color: #0d1b3e;
+  }
+
+  .input-wrap {
+    position: relative;
+    margin-bottom: 20px;
+  }
+  .input-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #b0bec5;
+    font-size: 0.95rem;
+    pointer-events: none;
+  }
+  .field-input {
+    width: 100%;
+    border: 1px solid #dce3ec;
+    border-radius: 6px;
+    padding: 12px 14px 12px 40px;
+    font-size: 0.9rem;
+    color: #0d1b3e;
+    font-family: inherit;
+    background: #fff;
+    outline: none;
+    transition:
+      border-color 0.2s,
+      box-shadow 0.2s;
+  }
+  .field-input::placeholder {
+    color: #b0bec5;
+  }
+  .field-input:focus {
+    border-color: #0d1b3e;
+    box-shadow: 0 0 0 3px rgba(13, 27, 62, 0.08);
+  }
+  .field-input.is-invalid {
+    border-color: #e53e3e;
+    box-shadow: 0 0 0 3px rgba(229, 62, 62, 0.1);
+  }
+
+  /* password toggle */
+  .pw-wrap {
+    position: relative;
+  }
+  .pw-wrap .field-input {
+    padding-right: 42px;
+  }
+  .pw-toggle {
+    position: absolute;
+    right: 13px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: #b0bec5;
+    cursor: pointer;
+    padding: 0;
+    font-size: 0.95rem;
+    transition: color 0.2s;
+  }
+  .pw-toggle:hover {
+    color: #0d1b3e;
+  }
+
+  /* remember me */
+  .remember-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+  .remember-row input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: #0d1b3e;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  .remember-row label {
+    font-size: 0.88rem;
+    color: #4a5568;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  /* submit */
+  .btn-signin {
+    width: 100%;
+    background: #0d1b3e;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 14px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition:
+      background 0.2s,
+      transform 0.15s;
+  }
+  .btn-signin:hover {
+    background: #162347;
+    transform: translateY(-1px);
+  }
+  .btn-signin i {
+    font-size: 1rem;
+  }
+
+  /* divider */
+  .card-divider {
+    border: none;
+    border-top: 1px solid #eef1f8;
+    margin: 28px 0 20px;
+  }
+
+  /* error alert */
+  .login-error {
+    background: #fff5f5;
+    border: 1px solid #fed7d7;
+    border-radius: 6px;
+    padding: 11px 14px;
+    margin-bottom: 22px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.84rem;
+    color: #c53030;
+  }
+  .login-error i {
+    flex-shrink: 0;
+  }
+
+  /* security notice */
+  .security-notice {
+    font-size: 0.73rem;
+    color: #a0aec0;
+    text-align: center;
+    line-height: 1.65;
+  }
+
+  /* ── ADMIN FOOTER ── */
+  .admin-footer {
+    text-align: center;
+    padding: 20px;
+    font-size: 0.75rem;
+    color: #a0aec0;
+  }
+</style>
+{% endblock %} {% block content %}
+
+<!-- TOP BAR -->
+<div class="admin-topbar">
+  <a href="{{ url_for('index') }}" class="topbar-brand">CyberNova Analytics</a>
+  <a href="{{ url_for('index') }}" class="topbar-return">
+    <i class="bi bi-arrow-left"></i> Return to Site
+  </a>
+</div>
+
+<!-- MAIN -->
+<main class="login-main">
+  <div class="login-card">
+    <!-- Icon -->
+    <div class="lock-badge">
+      <i class="bi bi-shield-lock-fill"></i>
+    </div>
+
+    <h1>Admin Login</h1>
+    <p class="restricted-label">
+      Restricted Access – Authorised<br />Personnel Only
+    </p>
+
+    <!-- Error -->
+    {% if error %}
+    <div class="login-error">
+      <i class="bi bi-exclamation-triangle-fill"></i>
+      {{ error }}
+    </div>
+    {% endif %}
+
+    <!-- Form -->
+    <form method="POST" action="{{ url_for('admin_login') }}" novalidate>
+      <!-- Username -->
+      <label class="field-label">Username</label>
+      <div class="input-wrap">
+        <i class="bi bi-person input-icon"></i>
+        <input
+          type="text"
+          name="username"
+          class="field-input {% if error %}is-invalid{% endif %}"
+          placeholder="Enter admin ID"
+          autocomplete="username"
+          autofocus
+        />
+      </div>
+
+      <!-- Password -->
+      <div class="field-label-row">
+        <label class="field-label">Password</label>
+        <a href="#" class="reset-link">Request Reset</a>
+      </div>
+      <div class="input-wrap pw-wrap">
+        <i class="bi bi-key input-icon"></i>
+        <input
+          type="password"
+          name="password"
+          id="passwordField"
+          class="field-input {% if error %}is-invalid{% endif %}"
+          placeholder="••••••••••"
+          autocomplete="current-password"
+        />
+        <button
+          type="button"
+          class="pw-toggle"
+          id="pwToggle"
+          aria-label="Toggle password visibility"
+        >
+          <i class="bi bi-eye" id="pwIcon"></i>
+        </button>
+      </div>
+
+      <!-- Remember -->
+      <div class="remember-row">
+        <input type="checkbox" id="rememberMe" name="remember" />
+        <label for="rememberMe">Keep me authenticated</label>
+      </div>
+
+      <!-- Submit -->
+      <button type="submit" class="btn-signin">
+        Secure Sign In <i class="bi bi-shield-check"></i>
+      </button>
+    </form>
+
+    <hr class="card-divider" />
+
+    <!-- Security notice -->
+    <p class="security-notice">
+      All access attempts are logged and monitored.<br />
+      Unauthorised access is strictly prohibited<br />
+      under Botswana Cyber Laws.
+    </p>
+  </div>
+</main>
+
+<!-- ADMIN FOOTER -->
+<footer class="admin-footer">
+  &copy; 2024 CyberNova Analytics. Botswana's Strategic Cybersecurity Partner.
+</footer>
+
+{% endblock %} {% block extra_js %}
+<script>
+  // Password show/hide toggle
+  const pwField = document.getElementById("passwordField");
+  const pwToggle = document.getElementById("pwToggle");
+  const pwIcon = document.getElementById("pwIcon");
+
+  pwToggle.addEventListener("click", () => {
+    const isHidden = pwField.type === "password";
+    pwField.type = isHidden ? "text" : "password";
+    pwIcon.className = isHidden ? "bi bi-eye-slash" : "bi bi-eye";
+  });
+</script>
+{% endblock %}
