@@ -4,6 +4,18 @@ A database-driven website for CyberNova Analytics, a cybersecurity company. Visi
 
 Built as a university product development project (CET 333). It is a working prototype with a single admin account and no public user registration.
 
+## Live Demo
+
+**Site:** https://dube.pythonanywhere.com
+
+**Admin panel:** https://dube.pythonanywhere.com/admin/login
+
+| Username | Password              |
+| -------- | --------------------- |
+| `admin`  | `CyberNova-Demo-2026` |
+
+This is a demo instance hosted on PythonAnywhere's free tier. Anyone can sign in to the admin panel, so please don't enter real personal information in the forms. Content may be edited or reset at any time, and the site may go offline when the free hosting expires.
+
 ## Features
 
 ### Public site
