@@ -16,6 +16,10 @@ Built as a university product development project (CET 333). It is a working pro
 
 This is a demo instance hosted on PythonAnywhere's free tier. Anyone can sign in to the admin panel, so please don't enter real personal information in the forms. Content may be edited or reset at any time, and the site may go offline when the free hosting expires.
 
+## Design Documentation
+
+Requirements, ERD, use case diagram, flowcharts and wireframes are in [docs/DESIGN.md](docs/DESIGN.md).
+
 ## Features
 
 ### Public site
