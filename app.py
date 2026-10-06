@@ -1,11 +1,15 @@
+import os
 import sqlite3
+from dotenv import load_dotenv
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from werkzeug.security import check_password_hash, generate_password_hash
 from models import init_db
 
+load_dotenv()
+
 app = Flask(__name__)
 
-app.secret_key = '5d1883eba628fd1ed2824748fd9229307b713ed77e34d51c'
+app.secret_key = os.environ.get("SECRET_KEY", "dev-only-change-me")
 
 # ─── Prevent caching on admin pages ───────────────────────
 @app.after_request
@@ -635,4 +639,4 @@ def admin_inquiry_delete(inquiry_id):
 
 # ─── Run ──────────────────────────────────────────────────
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=os.environ.get("FLASK_DEBUG") == "1")
