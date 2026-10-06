@@ -3,7 +3,10 @@ import sqlite3
 from dotenv import load_dotenv
 from werkzeug.security import generate_password_hash
 
-load_dotenv()
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DB_PATH = os.path.join(BASE_DIR, "database.db")
+
+load_dotenv(os.path.join(BASE_DIR, ".env"))
 
 def seed_admin():
     admin_username = os.environ.get("ADMIN_USERNAME", "admin")
@@ -13,7 +16,7 @@ def seed_admin():
         print("ADMIN_PASSWORD is not set. Add it to your .env file first.")
         return
 
-    conn = sqlite3.connect('database.db')
+    conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
     cursor.execute("SELECT * FROM admin WHERE username = ?", (admin_username,))
