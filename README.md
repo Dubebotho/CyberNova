@@ -90,6 +90,7 @@ Open `.env` and replace every `change-me` with your own values:
 ```bash
 python app.py     # creates the tables on first run; stop with Ctrl+C
 python seed.py    # creates the admin account from your .env values
+python seed_demo.py # optional sample content
 ```
 
 ### 6. Run the app
